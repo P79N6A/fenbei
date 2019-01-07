@@ -25,8 +25,10 @@ import com.lingjuan.app.fragment.later.LatestFragment;
 import com.lingjuan.app.fragment.perferred.PreferredFragment;
 import com.lingjuan.app.fragment.sake.SaleFragment;
 import com.lingjuan.app.fragment.later.TuiJuFragment;
+import com.lingjuan.app.uitls.Configure;
 import com.lingjuan.app.uitls.NetWorkUtils;
 import com.lingjuan.app.uitls.Util;
+import com.lingjuan.app.uitls.login.LoginStore;
 import com.lingjuan.app.witde.OnClists;
 import com.tencent.connect.share.QQShare;
 import com.tencent.open.utils.ThreadManager;
@@ -35,15 +37,15 @@ import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
 
 
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import mtopsdk.common.util.StringUtils;
 
 /**
- *  time : 2017年8月26日21:28:49
- *  by CrackgnKey
- *  首页
+ * time : 2017年8月26日21:28:49
+ * by CrackgnKey
+ * 首页
  */
 public class MainActivity extends BaseActivity {
     @Bind(R.id.fl_id)
@@ -84,7 +86,7 @@ public class MainActivity extends BaseActivity {
         fragment[1] = new PreferredFragment();//包邮
         fragment[2] = new SaleFragment();//优品
         fragment[3] = new XinMyFragment();//我的
-        viewpager = (ViewPager)findViewById(R.id.fl_id);
+        viewpager = (ViewPager) findViewById(R.id.fl_id);
         //构建Adapter
         MyPageAdapter mypag = new MyPageAdapter(getSupportFragmentManager());
         //填充
@@ -106,13 +108,13 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
                 radioButtons[position].setChecked(true);
-                if(position == 0){
+                if (position == 0) {
                     setVingSou();
-                }else if(position == 1 ){
+                } else if (position == 1) {
                     setGongSou();
-                }else if(position == 2 ){
+                } else if (position == 2) {
                     setVingChao();
-                }else if(position == 3){
+                } else if (position == 3) {
                     setGerenzhongxin();
                 }
             }
@@ -140,7 +142,7 @@ public class MainActivity extends BaseActivity {
         getOnCli().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this,SearchActivity.class));
+                startActivity(new Intent(MainActivity.this, SearchActivity.class));
             }
         });
     }
@@ -152,9 +154,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void init() {
-
     }
-
 
     /**
      * Fragment填充数据
@@ -176,28 +176,28 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    @OnClick({ R.id.rb_weixin, R.id.rb_wo, R.id.rb_faxian,R.id.rb_jiu})
+    @OnClick({R.id.rb_weixin, R.id.rb_wo, R.id.rb_faxian, R.id.rb_jiu})
     public void submit(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.rb_weixin://微信
-                viewpager.setCurrentItem(0,false);
+                viewpager.setCurrentItem(0, false);
                 setVingSou();
                 break;
             case R.id.rb_wo://通讯录
-                viewpager.setCurrentItem(1,false);
+                viewpager.setCurrentItem(1, false);
                 setGongSou();
                 break;
             case R.id.rb_faxian://发现
-                viewpager.setCurrentItem(2,false);
+                viewpager.setCurrentItem(2, false);
                 setVingChao();
                 break;
             case R.id.rb_jiu://我的
-                if(!ExampleApplication.IsLogin) {
-                    viewpager.setCurrentItem(3,false);
+                if (!ExampleApplication.IsLogin) {
+                    viewpager.setCurrentItem(3, false);
                     setGerenzhongxin();
                     //startActivity(new Intent(this, LoginActivity.class));
-                }else {
-                    viewpager.setCurrentItem(3,false);
+                } else {
+                    viewpager.setCurrentItem(3, false);
                     setGerenzhongxin();
                 }
                 break;
@@ -211,15 +211,16 @@ public class MainActivity extends BaseActivity {
 
     /**
      * QQ分享附带方法
+     *
      * @param params
      */
-    protected  void doShareToQQ(final Bundle params) {
+    protected void doShareToQQ(final Bundle params) {
         // QQ分享要在主线程做
         ThreadManager.getMainHandler().post(new Runnable() {
 
             @Override
             public void run() {
-               ExampleApplication.mTencent.shareToQQ(MainActivity.this, params, qqShareListener);
+                ExampleApplication.mTencent.shareToQQ(MainActivity.this, params, qqShareListener);
             }
         });
     }
@@ -234,12 +235,14 @@ public class MainActivity extends BaseActivity {
                 Util.toastMessage(MainActivity.this, "取消分享");
             }
         }
+
         @Override
         public void onComplete(Object response) {
             // TODO Auto-generated method stub
             Util.toastMessage(MainActivity.this, "分享成功");
 
         }
+
         @Override
         public void onError(UiError e) {
             // TODO Auto-generated method stub
@@ -249,34 +252,35 @@ public class MainActivity extends BaseActivity {
 
     /**
      * z这才是QQ分享
+     *
      * @param view
      */
     public void shareOnlyImageOnQQ(View view) {
         final Bundle params = new Bundle();
         params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
         params.putString(QQShare.SHARE_TO_QQ_TITLE, "您的朋友向您分享了一本省钱秘笈");
-        params.putString(QQShare.SHARE_TO_QQ_SUMMARY,  "下载APP,天天双11,还在等什么,快来加入我们吧");
-        params.putString(QQShare.SHARE_TO_QQ_TARGET_URL,  "http://www.aiboyy.pw/gx/daling.apk");
-        params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL,"http://www.aiboyy.pw/images/bg.png");
-       // params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL,"http://imgcache.qq.com/qzone/space_item/pre/0/66768.gif");
-        params.putString(QQShare.SHARE_TO_QQ_APP_NAME,  "领卷儿");
+        params.putString(QQShare.SHARE_TO_QQ_SUMMARY, "下载APP,天天双11,还在等什么,快来加入我们吧");
+        params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, "http://www.aiboyy.pw/gx/daling.apk");
+        params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, "http://www.aiboyy.pw/images/bg.png");
+        // params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL,"http://imgcache.qq.com/qzone/space_item/pre/0/66768.gif");
+        params.putString(QQShare.SHARE_TO_QQ_APP_NAME, "领卷儿");
 
-       // mTencent.shareToQQ(MainActivity.this, params, new BaseUiListener());
+        // mTencent.shareToQQ(MainActivity.this, params, new BaseUiListener());
         doShareToQQ(params);
     }
 
     //如果要收到QQ分享，或登录的一些状态，必须加入代码
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Tencent.onActivityResultData(requestCode,resultCode,data,qqShareListener);
+        Tencent.onActivityResultData(requestCode, resultCode, data, qqShareListener);
     }
 
 
     @Override
     public void onBackPressed() {
-        if(((System.currentTimeMillis()-time)>2000)){
+        if (((System.currentTimeMillis() - time) > 2000)) {
             Toast.makeText(this, "在按一次退出,谢谢", Toast.LENGTH_SHORT).show();
-        }else{
+        } else {
             finish();
         }
         time = System.currentTimeMillis();

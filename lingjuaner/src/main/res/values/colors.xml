@@ -7,5 +7,8 @@
     <color name="baised">#ffff</color>
     <color name="xuanzhong">#F06F1D</color>
     <color name="weixuan">#000000</color>
+    <color name="logoScreenBackground">#F7F7F7</color>
+    <color name="colorLoginButton">#004684</color>
+    <color name="colorCursor">#cccccc</color>
     #
 </resources>

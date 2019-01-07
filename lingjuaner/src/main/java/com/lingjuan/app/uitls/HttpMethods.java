@@ -1,5 +1,6 @@
 package com.lingjuan.app.uitls;
 
+import com.lingjuan.app.api.UserRequest;
 import com.lingjuan.app.api.getLatest;
 import com.lingjuan.app.view.ToStringConverterFactory;
 
@@ -8,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -32,212 +34,241 @@ public class HttpMethods {
         httpClientBuilder.connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
 
         retrofit = new Retrofit.Builder()
-                .client(httpClientBuilder.build())
-                .addConverterFactory(new ToStringConverterFactory())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .baseUrl(BASE_URL)
-                .build();
+            .client(httpClientBuilder.build())
+            .addConverterFactory(new ToStringConverterFactory())
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+            .baseUrl(BASE_URL)
+            .build();
 
         movieService = retrofit.create(getLatest.class);
     }
 
     //在访问HttpMethods时创建单例
-    private static class SingletonHolder{
+    private static class SingletonHolder {
         private static final HttpMethods INSTANCE = new HttpMethods();
     }
 
     //获取单例
-    public static HttpMethods getInstance(){
+    public static HttpMethods getInstance() {
         return SingletonHolder.INSTANCE;
     }
 
     /**
      * 用于获取推举的数据
+     *
      * @param subscriber 由调用者传过来的观察者对象
-     * @param count 获取长度
+     * @param count      获取长度
      */
-    public void getTopMovie(Subscriber<String> subscriber,int count){
-        movieService.getFen(count,6)
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+    public void getTopMovie(Subscriber<String> subscriber, int count) {
+        movieService.getFen(count, 6)
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(subscriber);
     }
 
+    /**
+     * 用户注册
+     *
+     * @param subscriber
+     * @param userRequest
+     */
+    public void register(Subscriber<String> subscriber, UserRequest userRequest) {
+        movieService.register(userRequest)
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(subscriber);
+    }
 
     /**
      * 用于搜索单个数据
+     *
      * @param subscriber 由调用者传过来的观察者对象
-     * @param count 获取长度
+     * @param count      获取长度
      */
-    public void getDanGe(Subscriber<String> subscriber,String count){
+    public void getDanGe(Subscriber<String> subscriber, String count) {
         movieService.getDanGe(count)
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(subscriber);
     }
 
 
     /**
      * 用于分类的数据
+     *
      * @param subscriber 由调用者传过来的观察者对象
-     * @param count 获取长度
+     * @param count      获取长度
      */
-    public void getFewnLei(Subscriber<String> subscriber,int count,int page){
-        movieService.getFen(count,page)
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+    public void getFewnLei(Subscriber<String> subscriber, int count, int page) {
+        movieService.getFen(count, page)
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(subscriber);
     }
 
     /**
      * 用于特卖的数据
+     *
      * @param subscriber 由调用者传过来的观察者对象
      */
-    public void getSanHeYi(Subscriber<String> subscriber,int page,int fangshi){
-        movieService.getSanHeYi(page,fangshi)
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+    public void getSanHeYi(Subscriber<String> subscriber, int page, int fangshi) {
+        movieService.getSanHeYi(page, fangshi)
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(subscriber);
     }
 
     /**
      * 用于特卖的数据
+     *
      * @param subscriber 由调用者传过来的观察者对象
      */
-    public void getSanHeYi(Subscriber<String> subscriber,int page,int fangshi,int cat){
-        movieService.getSanHeYi(page,fangshi,cat)
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
-    }
-
-
-    /**
-     * 用于特卖的数据
-     * @param subscriber 由调用者传过来的观察者对象
-     */
-    public void getYouHuii(Subscriber<String> subscriber,int page,int qishi,int jieshu) {
-        movieService.getYouPin(page,qishi,jieshu)
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+    public void getSanHeYi(Subscriber<String> subscriber, int page, int fangshi, int cat) {
+        movieService.getSanHeYi(page, fangshi, cat)
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(subscriber);
     }
 
 
     /**
      * 用于特卖的数据
+     *
      * @param subscriber 由调用者传过来的观察者对象
      */
-    public void getYouHuii(Subscriber<String> subscriber,int page,int qishi,int jieshu,int sort,int cat) {
-        movieService.getYouPin(page,qishi,jieshu,sort,cat)
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+    public void getYouHuii(Subscriber<String> subscriber, int page, int qishi, int jieshu) {
+        movieService.getYouPin(page, qishi, jieshu)
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(subscriber);
+    }
+
+
+    /**
+     * 用于特卖的数据
+     *
+     * @param subscriber 由调用者传过来的观察者对象
+     */
+    public void getYouHuii(Subscriber<String> subscriber, int page, int qishi, int jieshu, int sort, int cat) {
+        movieService.getYouPin(page, qishi, jieshu, sort, cat)
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(subscriber);
     }
 
     /**
      * 用于分类的数据
+     *
      * @param subscriber 由调用者传过来的观察者对象
      */
-    public void getJiuJIud(Subscriber<String> subscriber,int page,int cat,int sort) {
-        movieService.getJiuJiu(page,cat,sort)
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+    public void getJiuJIud(Subscriber<String> subscriber, int page, int cat, int sort) {
+        movieService.getJiuJiu(page, cat, sort)
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(subscriber);
     }
 
     /**
      * 用于9.9的数据
+     *
      * @param subscriber 由调用者传过来的观察者对象
      */
-    public void getJiuJIud(Subscriber<String> subscriber,int page,int cat) {
-        movieService.getJiuJiu(page,cat)
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+    public void getJiuJIud(Subscriber<String> subscriber, int page, int cat) {
+        movieService.getJiuJiu(page, cat)
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(subscriber);
     }
 
     /**
      * 用于搜索页面的数据
+     *
      * @param subscriber 由调用者传过来的观察者对象
      */
-    public void getSOuSuo(Subscriber<String> subscriber,int  path,String neirong,int fenlei) {
-        movieService.getSuoSou(path,neirong,fenlei)
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+    public void getSOuSuo(Subscriber<String> subscriber, int path, String neirong, int fenlei) {
+        movieService.getSuoSou(path, neirong, fenlei)
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(subscriber);
     }
 
     /**
      * 用于搜索页面的热门搜索数据
+     *
      * @param subscriber 由调用者传过来的观察者对象
      */
     public void getReSouSuo(Subscriber<String> subscriber) {
         movieService.getReMen()
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(subscriber);
     }
 
 
     /**
      * 用于搜索页面的热门搜索数据
+     *
      * @param subscriber 由调用者传过来的观察者对象
      */
     public void getGengXin(Subscriber<String> subscriber) {
         movieService.getUpade()
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(subscriber);
     }
 
     /**
      * 用于搜索页面的热门搜索数据
+     *
      * @param subscriber 由调用者传过来的观察者对象
      */
     public void getLunBo(Subscriber<String> subscriber) {
         movieService.getLunBpo()
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(subscriber);
     }
 
 
     /**
      * 用于Pid的获取的热门搜索数据
+     *
      * @param subscriber 由调用者传过来的观察者对象
      */
-    public void getPid(Subscriber<String> subscriber,String name) {
+    public void getPid(Subscriber<String> subscriber, String name) {
         movieService.getYaoQingma(name)
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(subscriber);
     }
 
     /**
      * 用于搜索页面的热门搜索数据
+     *
      * @param subscriber 由调用者传过来的观察者对象
      */
-    public void getWEbView(Subscriber<String> subscriber,String str) {
+    public void getWEbView(Subscriber<String> subscriber, String str) {
         movieService.getScXiangPing(str)
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(subscriber);
     }
 
 }

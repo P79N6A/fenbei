@@ -1,0 +1,2 @@
+把这两个文件夹移动到你服务器的根目录后在app项目中api/getLatest.java中修改服务器地址
+打开lingjuan还有说明，麻烦看下

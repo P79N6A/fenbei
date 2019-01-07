@@ -1,0 +1,6 @@
+﻿[   
+ {	"zuozhe": "QQ1171628833,免费定制网站APP",
+   "isopen": "1", 
+       "banebn": "1.0.1"
+,        "gengxin": "1.修复BUG\n2.优化界面\n3.看到此消息的找客户领取99红包\n4.欢迎大家提问题",        
+"url": "http://www.aiboyy.pw/gx/ling.apk"    }]

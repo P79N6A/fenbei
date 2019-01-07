@@ -3,17 +3,23 @@ package com.lingjuan.app.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.lingjuan.app.R;
+import com.lingjuan.app.adapter.YouPinAdapter;
+import com.lingjuan.app.api.UserRequest;
 import com.lingjuan.app.base.BaseActivity;
 import com.lingjuan.app.base.ExampleApplication;
 import com.lingjuan.app.broad.BaseUIListener;
 import com.lingjuan.app.broad.TestEvent;
+import com.lingjuan.app.uitls.Configure;
+import com.lingjuan.app.uitls.HttpMethods;
 import com.tencent.connect.UserInfo;
 import com.tencent.connect.auth.QQToken;
 import com.tencent.connect.common.Constants;
@@ -25,16 +31,25 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import butterknife.Bind;
+import rx.Subscriber;
 
 /**
  * Created by sks on 2017/8/17.
- *  登录窗口
+ * 登录窗口
  */
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
     Button buttLogin;
     Button buttFenxiang;
+    @Bind(R.id.register_referrer)
+    EditText editTextReferrer;
+    @Bind(R.id.register_mobile)
+    EditText editTextMobile;
+    @Bind(R.id.register_nick)
+    EditText editTextNick;
+    @Bind(R.id.register_register)
+    Button buttonRegister;
     @Bind(R.id.image_imqq)
     ImageView imageImqq;
     @Bind(R.id.image_imwx)
@@ -49,25 +64,45 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       // setContentView(R.layout.activity_login);
+        // setContentView(R.layout.activity_login);
         mTencent = ExampleApplication.mTencent;
+
+        editTextReferrer = (EditText) findViewById(R.id.register_referrer);
+        editTextMobile = (EditText) findViewById(R.id.register_mobile);
+        editTextNick = (EditText) findViewById(R.id.register_nick);
+        buttonRegister = (Button) findViewById(R.id.register_register);
+        buttonRegister.setOnClickListener(this);
+
         imageImqq = (ImageView) findViewById(R.id.image_imqq);
         imageImwx = (ImageView) findViewById(R.id.image_imwb);
         imageImwb = (ImageView) findViewById(R.id.image_imwx);
         imageImqq.setOnClickListener(this);
         imageImwx.setOnClickListener(this);
         imageImwb.setOnClickListener(this);
+
+        //设置为ActionBar
+        Toolbar toolbar =(Toolbar) findViewById(R.id.buttlbar);
+        setSupportActionBar(toolbar);
+        //显示那个箭头
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     @Override
     protected int getLayout() {
-        return R.layout.activity_login;
+        return R.layout.activity_login2;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        if (Configure.CALLBACK != null)
+            Configure.CALLBACK.postExec();
     }
 
     @Override
@@ -87,16 +122,44 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     @Override
     public void onClick(View v) {
-            switch (v.getId()){
-                case R.id.image_imqq://微信
-                    buttonLogin(v);
-                    break;
-                case R.id.image_imwb://通讯录
-                case R.id.image_imwx://发现
-                    Toast.makeText(this, "暂时只支持QQ登录,谢谢您的参与", Toast.LENGTH_SHORT).show();
-                    break;
-            }
+        switch (v.getId()) {
+            case R.id.register_register:
+                register();
+                break;
+            case R.id.image_imqq://微信
+                buttonLogin(v);
+                break;
+            case R.id.image_imwb://通讯录
+            case R.id.image_imwx://发现
+                Toast.makeText(this, "暂时只支持QQ登录,谢谢您的参与", Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
+
+    private void register() {
+        UserRequest userRequest = new UserRequest(editTextNick.getText().toString(), editTextMobile.getText().toString(), 0L);
+        HttpMethods.getInstance().register(new Subscriber<String>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                System.out.println("e 是:"+ e.getMessage());
+                Toast.makeText(LoginActivity.this, "请求失败,请稍后尝试", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNext(String s) {
+                System.out.println("s 是:"+ s);
+                // 登录并记录状态
+                Configure.USERID = "123";
+                finish();
+            }
+        }, userRequest);
+    }
+
 
     /**
      * 自定义监听器实现IUiListener接口后，需要实现的3个方法
@@ -106,7 +169,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         @Override
         public void onComplete(Object response) {
-           // Toast.makeText(LoginActivity.this, "授权成功", Toast.LENGTH_SHORT).show();
+            // Toast.makeText(LoginActivity.this, "授权成功", Toast.LENGTH_SHORT).show();
             Log.e(TAG, "response:" + response);
             JSONObject obj = (JSONObject) response;
             try {
@@ -117,7 +180,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 mTencent.setAccessToken(accessToken, expires);
                 QQToken qqToken = mTencent.getQQToken();
                 mUserInfo = new UserInfo(LoginActivity.this, qqToken);
-                mUserInfo.getUserInfo(new BaseUIListener(LoginActivity.this,"get_simple_userinfo"));
+                mUserInfo.getUserInfo(new BaseUIListener(LoginActivity.this, "get_simple_userinfo"));
                 ExampleApplication.IsLogin = true;
                 mUserInfo.getUserInfo(new IUiListener() {
                     @Override
@@ -156,8 +219,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         }
 
     }
-
-
 
 
     /**

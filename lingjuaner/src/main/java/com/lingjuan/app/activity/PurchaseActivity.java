@@ -10,8 +10,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.WebView;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -40,11 +42,7 @@ import com.lingjuan.app.api.Iben;
 import com.lingjuan.app.base.BaseActivity;
 import com.lingjuan.app.base.ExampleApplication;
 import com.lingjuan.app.base.Share;
-import com.lingjuan.app.uitls.Duwenjian;
-import com.lingjuan.app.uitls.HttpMethods;
-import com.lingjuan.app.uitls.L;
-import com.lingjuan.app.uitls.Logger;
-import com.lingjuan.app.uitls.Util;
+import com.lingjuan.app.uitls.*;
 import com.lingjuan.app.witde.DemoTradeCallback;
 import com.tencent.connect.share.QQShare;
 import com.tencent.open.utils.ThreadManager;
@@ -118,7 +116,7 @@ public class PurchaseActivity extends BaseActivity implements View.OnClickListen
     private String fenxiangjiage;
     private String PicUrl;
     private KProgressHUD hud;
-    private static final String OSCHINA_START="<div class=\"white\"><div class=\"highlight\">";
+    private static final String OSCHINA_START = "<div class=\"white\"><div class=\"highlight\">";
     private static final String IMGSRC_REG = "http(s)?:\"?(.*?)(\"|>|)+.(jpg|jpeg|gif|png|bmp)";
     private String urls;
     private ArrayList<String> picList;
@@ -127,13 +125,13 @@ public class PurchaseActivity extends BaseActivity implements View.OnClickListen
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-      //  setContentView(R.layout.purchase_activity);
+        //  setContentView(R.layout.purchase_activity);
         exParams = new HashMap<>();
         exParams.put("isv_code", "appisvcode");
         exParams.put("alibaba", "阿里巴巴");//自定义参数部分，可任意增删改
         setshangqin();
         mapArrayList = (ArrayList<Map<String, Object>>) getIntent().getSerializableExtra("list");
-        type = getIntent().getIntExtra("type",3);
+        type = getIntent().getIntExtra("type", 3);
         //判定是否是点击轮播图进来的
         buttJiage = (TextView) findViewById(R.id.butt_jiage);
         buttXianjia = (TextView) findViewById(R.id.butt_xianjia);
@@ -145,9 +143,9 @@ public class PurchaseActivity extends BaseActivity implements View.OnClickListen
         shPic = (ImageView) findViewById(R.id.sh_pic);
         webview = (ListView) findViewById(R.id.webview);
         //判定是不是点击轮播图来的
-        if(type != 5){//不是
+        if (type != 5) {//不是
             allGoods(type);
-        }else {//是
+        } else {//是
             posd = 0;
             carouseGoods(posd);
         }
@@ -157,7 +155,7 @@ public class PurchaseActivity extends BaseActivity implements View.OnClickListen
         image_fanhui.setOnClickListener(this);
         image_fenxiang.setOnClickListener(this);
         buttChakan.setOnClickListener(this);
-        urls = Duwenjian.getString(this,"wwbview.html");
+        urls = Duwenjian.getString(this, "wwbview.html");
 
 
     }
@@ -174,30 +172,35 @@ public class PurchaseActivity extends BaseActivity implements View.OnClickListen
 
 
     /**
-     * @param view
-     * 打开指定链接
+     * @param view 打开指定链接
      */
     public void showUrl(View view) {
-        String yUrl = (String) mapArrayList.get(posd).get("coupon_id");
-        String sId;
-        //判定是不是点击轮播图来的
-        if(type != 5){
-            sId = (String) mapArrayList.get(posd).get("goods_id");
-        }else {
-            sId = (String) mapArrayList.get(posd).get("quan_id");
-        }
-        System.out.println("====拼接的地址="+yUrl);
-        Toast.makeText(this, "正在跳转至淘宝,请稍等", Toast.LENGTH_SHORT).show();
-        alibcShowParams = new AlibcShowParams(OpenType.Native, false);
-        alibcShowParams.setClientType("taobao_scheme");
-        AlibcTrade.show(this, new AlibcPage(Iben.getUrl(yUrl,sId,Iben.YURL)), alibcShowParams, null, exParams , new DemoTradeCallback());
+        LoginUtil.checkLogin(PurchaseActivity.this, new LoginUtil.LoginForCallBack() {
+            @Override
+            public void callBack() {
+                String yUrl = (String) mapArrayList.get(posd).get("coupon_id");
+                String sId;
+                //判定是不是点击轮播图来的
+                if (type != 5) {
+                    sId = (String) mapArrayList.get(posd).get("goods_id");
+                } else {
+                    sId = (String) mapArrayList.get(posd).get("quan_id");
+                }
+                System.out.println("====拼接的地址=" + yUrl);
+                Toast.makeText(PurchaseActivity.this, "正在跳转至淘宝,请稍等", Toast.LENGTH_SHORT).show();
+                alibcShowParams = new AlibcShowParams(OpenType.Native, false);
+                alibcShowParams.setClientType("taobao_scheme");
+                AlibcTrade.show(PurchaseActivity.this, new AlibcPage(Iben.getUrl(yUrl, sId, Iben.YURL)), alibcShowParams, null, exParams, new DemoTradeCallback());
+            }
+        });
     }
 
     /**
      * QQ分享附带方法
+     *
      * @param params
      */
-    protected  void doShareToQQ(final Bundle params) {
+    protected void doShareToQQ(final Bundle params) {
         // QQ分享要在主线程做
         ThreadManager.getMainHandler().post(new Runnable() {
 
@@ -218,12 +221,14 @@ public class PurchaseActivity extends BaseActivity implements View.OnClickListen
                 Util.toastMessage(PurchaseActivity.this, "取消分享");
             }
         }
+
         @Override
         public void onComplete(Object response) {
             // TODO Auto-generated method stub
             Util.toastMessage(PurchaseActivity.this, "分享成功");
 
         }
+
         @Override
         public void onError(UiError e) {
             // TODO Auto-generated method stub
@@ -233,17 +238,18 @@ public class PurchaseActivity extends BaseActivity implements View.OnClickListen
 
     /**
      * 这才是QQ分享
+     *
      * @param view
      */
-    public void shareOnlyImageOnQQ(String view,String jiage,String miaoshu,String url,String tupian) {
+    public void shareOnlyImageOnQQ(String view, String jiage, String miaoshu, String url, String tupian) {
         final Bundle params = new Bundle();
         params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
-        params.putString(QQShare.SHARE_TO_QQ_TITLE, view+"→秒杀价:"+jiage);
-        params.putString(QQShare.SHARE_TO_QQ_SUMMARY,  miaoshu);
-        params.putString(QQShare.SHARE_TO_QQ_TARGET_URL,  url);
-        params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL,tupian);
+        params.putString(QQShare.SHARE_TO_QQ_TITLE, view + "→秒杀价:" + jiage);
+        params.putString(QQShare.SHARE_TO_QQ_SUMMARY, miaoshu);
+        params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, url);
+        params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, tupian);
         // params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL,"http://imgcache.qq.com/qzone/space_item/pre/0/66768.gif");
-        params.putString(QQShare.SHARE_TO_QQ_APP_NAME,  "领卷儿");
+        params.putString(QQShare.SHARE_TO_QQ_APP_NAME, "领卷儿");
 
         // mTencent.shareToQQ(MainActivity.this, params, new BaseUiListener());
         doShareToQQ(params);
@@ -252,17 +258,17 @@ public class PurchaseActivity extends BaseActivity implements View.OnClickListen
     //如果要收到QQ分享，或登录的一些状态，必须加入代码
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Tencent.onActivityResultData(requestCode,resultCode,data,qqShareListener);
+        Tencent.onActivityResultData(requestCode, resultCode, data, qqShareListener);
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.image_fanhui:
                 finish();
                 break;
             case R.id.image_fenxiang:
-                if(type != 5){
+                if (type != 5) {
                     //销量
                     String miaoshu = (String) mapArrayList.get(posd).get("goods_introduce");
                     //打开的地址
@@ -270,8 +276,8 @@ public class PurchaseActivity extends BaseActivity implements View.OnClickListen
                     String sId = (String) mapArrayList.get(posd).get("goods_id");
                     String name = (String) mapArrayList.get(posd).get("goods_short_title");
                     //分享商品
-                    shareOnlyImageOnQQ(name,fenxiangjiage,miaoshu,Iben.getUrl(yUrl,sId,Iben.YURL),PicUrl);
-                }else {
+                    shareOnlyImageOnQQ(name, fenxiangjiage, miaoshu, Iben.getUrl(yUrl, sId, Iben.YURL), PicUrl);
+                } else {
                     //销量
                     String miaoshu = (String) mapArrayList.get(0).get("quan_guid_content");
                     //打开的地址
@@ -280,7 +286,7 @@ public class PurchaseActivity extends BaseActivity implements View.OnClickListen
                     String name = (String) mapArrayList.get(0).get("goods_name");
                     String price_after_coupons = (String) mapArrayList.get(0).get("price_after_coupons");
                     //分享商品
-                    shareOnlyImageOnQQ(name,price_after_coupons,miaoshu,Iben.getUrl(yUrl,sId,Iben.YURL),PicUrl);
+                    shareOnlyImageOnQQ(name, price_after_coupons, miaoshu, Iben.getUrl(yUrl, sId, Iben.YURL), PicUrl);
                 }
                 break;
             case R.id.butt_chakan://加载详情
@@ -296,24 +302,24 @@ public class PurchaseActivity extends BaseActivity implements View.OnClickListen
     private void getXiqng(String nei) {
 
         hud = KProgressHUD.create(PurchaseActivity.this)
-                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
-                .setLabel("疯狂加载中")
-                .setCancellable(true)
-                .setAnimationSpeed(2)
-                .setDimAmount(0.5f)
-                .show();
-        String url = "http://hws.m.taobao.com/cache/mtop.wdetail.getItemDescx/4.1/?data={item_num_id:"+nei+"}";
+            .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+            .setLabel("疯狂加载中")
+            .setCancellable(true)
+            .setAnimationSpeed(2)
+            .setDimAmount(0.5f)
+            .show();
+        String url = "http://hws.m.taobao.com/cache/mtop.wdetail.getItemDescx/4.1/?data={item_num_id:" + nei + "}";
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        webview.setVisibility(View.VISIBLE);
-                        hud.dismiss();
-                        picList = getArrJson(response);
-                        ListPicAdapter listPicAdapter = new ListPicAdapter(PurchaseActivity.this,picList);
-                        webview.setAdapter(listPicAdapter);
-                    }
-                }, new Response.ErrorListener() {
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    webview.setVisibility(View.VISIBLE);
+                    hud.dismiss();
+                    picList = getArrJson(response);
+                    ListPicAdapter listPicAdapter = new ListPicAdapter(PurchaseActivity.this, picList);
+                    webview.setAdapter(listPicAdapter);
+                }
+            }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 hud.dismiss();
@@ -326,7 +332,7 @@ public class PurchaseActivity extends BaseActivity implements View.OnClickListen
 
     @Override
     protected void onDestroy() {
-        if(picList != null){
+        if (picList != null) {
             picList.clear();
             picList = null;
         }
@@ -335,17 +341,18 @@ public class PurchaseActivity extends BaseActivity implements View.OnClickListen
 
     /**
      * 解析json
+     *
      * @param string 要解析的字符串
      * @return s
      */
     private ArrayList<String> getArrJson(String string) {
         picList = new ArrayList<>();
-       String  List = "";
+        String List = "";
         try {
             JSONObject jsonObject = new JSONObject(string);
             JSONObject jsonArray = jsonObject.getJSONObject("data");
             JSONArray listjsonarrya = jsonArray.getJSONArray("images");
-            for (int i = 0;i < listjsonarrya.length();i++){
+            for (int i = 0; i < listjsonarrya.length(); i++) {
                 picList.add(listjsonarrya.getString(i));
             }
             //  List = jsonObject1.getString("pages");
@@ -357,10 +364,11 @@ public class PurchaseActivity extends BaseActivity implements View.OnClickListen
 
     /**
      * 弹出布局
+     *
      * @param yirme
      */
-    private void Diods(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(PurchaseActivity.this,R.style.AlertDialogStyle);
+    private void Diods() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(PurchaseActivity.this, R.style.AlertDialogStyle);
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.hong_diaoliag, null);
         ImageView bt = (ImageView) view.findViewById(R.id.imageView2);
@@ -371,9 +379,9 @@ public class PurchaseActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void onClick(View v) {
                 //根据QQ号跳转聊天页面
-                String url1 ="mqqwpa://im/chat?chat_type=wpa&uin="+Iben.QQ;
+                String url1 = "mqqwpa://im/chat?chat_type=wpa&uin=" + Iben.QQ;
 
-                Intent i1 =new Intent(Intent.ACTION_VIEW, Uri.parse(url1));
+                Intent i1 = new Intent(Intent.ACTION_VIEW, Uri.parse(url1));
 
                 i1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -383,98 +391,99 @@ public class PurchaseActivity extends BaseActivity implements View.OnClickListen
 
                 ad.dismiss();
 
-                System.out.println("======我的客服QQ是多少:"+Iben.QQ);
+                System.out.println("======我的客服QQ是多少:" + Iben.QQ);
             }
         });
     }
 
     /**
      * 是全部商品的
+     *
      * @param type type值
      */
-    private void allGoods(int type){
+    private void allGoods(int type) {
         String sId = (String) mapArrayList.get(posd).get("goods_id");
         //超过五次的时候清楚数据
-        if(Share.scList.size() > 5){
+        if (Share.scList.size() > 5) {
             Share.scList.clear();
         }
         //添加商品累计次数
-        if(Share.scList.get(sId)!= null){
+        if (Share.scList.get(sId) != null) {
             //不为空的时候获取已点击的熟练
             int i = Share.scList.get(sId);
             //自增加
             i++;
             //把增加的熟练添加进入
-            Share.scList.put(sId,i);
+            Share.scList.put(sId, i);
             //满足5次弹出红包 清楚布局
-            if(i >= 5){
+            if (i >= 5) {
                 Diods();
                 Share.scList.remove(sId);
             }
-            L.d("我走到添加数据了，商品号是;"+sId+",这是第几次点击：= "+i);
-        }else {
-            L.d("我走到添加数据了,第一次；"+sId);
+            L.d("我走到添加数据了，商品号是;" + sId + ",这是第几次点击：= " + i);
+        } else {
+            L.d("我走到添加数据了,第一次；" + sId);
             //没有的话直接添加
-            Share.scList.put(sId,1);
+            Share.scList.put(sId, 1);
         }
-        if(type == 1){
-            posd = getIntent().getIntExtra("posd", 0)-1;
-        }else if(type == 2){
-            posd = getIntent().getIntExtra("posd", 0)-2;
+        if (type == 1) {
+            posd = getIntent().getIntExtra("posd", 0) - 1;
+        } else if (type == 2) {
+            posd = getIntent().getIntExtra("posd", 0) - 2;
         }
         //商品名字
         buttName.setText((String) mapArrayList.get(posd).get("goods_short_title"));
         //商品价格
-        buttYuanjia.setText("优惠券:￥"+String.valueOf(mapArrayList.get(posd).get("coupon_price"))+"");
+        buttYuanjia.setText("优惠券:￥" + String.valueOf(mapArrayList.get(posd).get("coupon_price")) + "");
         //商品销量
-        buttXiaoliang.setText("月销量:"+mapArrayList.get(posd).get("goods_sales"));
+        buttXiaoliang.setText("月销量:" + mapArrayList.get(posd).get("goods_sales"));
         //商品描述
         scJiehsao.setText((String) mapArrayList.get(posd).get("goods_introduce"));
         PicUrl = (String) mapArrayList.get(posd).get("goods_pic");
 
-        if(PicUrl.startsWith("//")){
-            PicUrl = "https:"+PicUrl;
+        if (PicUrl.startsWith("//")) {
+            PicUrl = "https:" + PicUrl;
         }
         //商品图片
         Glide.with(PurchaseActivity.this).load(PicUrl)
-                .placeholder(R.mipmap.ic_loading_large)
-                .error(R.mipmap.ic_loading_large)
-                .into(shPic);
+            .placeholder(R.mipmap.ic_loading_large)
+            .error(R.mipmap.ic_loading_large)
+            .into(shPic);
         //原价
-        buttXianjia.setText("原价:￥"+mapArrayList.get(posd).get("goods_price"));
+        buttXianjia.setText("原价:￥" + mapArrayList.get(posd).get("goods_price"));
 
         double yuanjiage = (double) mapArrayList.get(posd).get("goods_price");
         double youhuijuanjiage = (double) mapArrayList.get(posd).get("coupon_price");
-        DecimalFormat df   = new DecimalFormat("######0.00");
-        buttJiage.setText("现价:￥"+df.format(yuanjiage-youhuijuanjiage));
-        fenxiangjiage = df.format(yuanjiage-youhuijuanjiage);
+        DecimalFormat df = new DecimalFormat("######0.00");
+        buttJiage.setText("现价:￥" + df.format(yuanjiage - youhuijuanjiage));
+        fenxiangjiage = df.format(yuanjiage - youhuijuanjiage);
     }
 
     /**
      * 轮播商品进来的
      */
-    private void carouseGoods (int posd){
+    private void carouseGoods(int posd) {
         //商品名字
         buttName.setText((String) mapArrayList.get(posd).get("goods_name"));
         //商品价格
-        buttYuanjia.setText("优惠券:￥"+String.valueOf(mapArrayList.get(posd).get("price_coupons"))+"");
+        buttYuanjia.setText("优惠券:￥" + String.valueOf(mapArrayList.get(posd).get("price_coupons")) + "");
         //商品销量
-        buttXiaoliang.setText("月销量:"+mapArrayList.get(posd).get("sales"));
+        buttXiaoliang.setText("月销量:" + mapArrayList.get(posd).get("sales"));
         //商品描述
         scJiehsao.setText((String) mapArrayList.get(posd).get("quan_guid_content"));
         PicUrl = (String) mapArrayList.get(posd).get("pic");
 
-        if(PicUrl.startsWith("//")){
-            PicUrl = "http:"+PicUrl;
+        if (PicUrl.startsWith("//")) {
+            PicUrl = "http:" + PicUrl;
         }
         //商品图片
         Glide.with(PurchaseActivity.this).load(PicUrl)
-                .placeholder(R.mipmap.ic_loading_large)
-                .error(R.mipmap.ic_loading_large)
-                .into(shPic);
+            .placeholder(R.mipmap.ic_loading_large)
+            .error(R.mipmap.ic_loading_large)
+            .into(shPic);
         //原价
-        buttXianjia.setText("原价:￥"+mapArrayList.get(posd).get("price"));
-        buttJiage.setText("现价:￥"+mapArrayList.get(posd).get("price_after_coupons"));
+        buttXianjia.setText("原价:￥" + mapArrayList.get(posd).get("price"));
+        buttJiage.setText("现价:￥" + mapArrayList.get(posd).get("price_after_coupons"));
 
     }
 }

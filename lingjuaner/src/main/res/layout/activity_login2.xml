@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+  <android.support.v7.widget.Toolbar
+    android:id="@+id/buttlbar"
+    android:background="#FEF3A9"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/y25">
+
+    <TextView
+      android:text="用户登录"
+      android:gravity="center"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"/>
+  </android.support.v7.widget.Toolbar>
+
+  <LinearLayout
+    android:orientation="vertical"
+    android:layout_centerInParent="true"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/linearLayout">
+
+    <LinearLayout
+      android:orientation="vertical"
+      android:layout_width="match_parent"
+      android:layout_height="200dp">
+
+      <EditText
+        android:id="@+id/register_referrer"
+        android:layout_width="fill_parent"
+        android:layout_height="36dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:hint="请输入邀请码"
+        android:padding="5dp"
+        android:maxLines="1"
+        android:textColorHint="#AAAAAA"
+        android:textSize="15sp"/>
+
+      <EditText
+        android:id="@+id/register_mobile"
+        android:layout_width="fill_parent"
+        android:layout_height="36dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:hint="请输入手机号"
+        android:padding="5dp"
+        android:maxLines="1"
+        android:textColorHint="#AAAAAA"
+        android:textSize="15sp"/>
+
+      <EditText
+        android:id="@+id/register_nick"
+        android:layout_width="fill_parent"
+        android:layout_height="36dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:hint="请输入昵称"
+        android:padding="5dp"
+        android:maxLines="1"
+        android:textColorHint="#AAAAAA"
+        android:textSize="15sp"/>
+
+      <RelativeLayout
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+          android:id="@+id/register_register"
+          android:text="注册"
+          android:textSize="22sp"
+          android:layout_centerInParent="true"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"/>
+      </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_marginTop="@dimen/y12"
+      android:layout_height="wrap_content">
+
+      <ImageView
+        android:id="@+id/image_imqq"
+        android:src="@mipmap/imqq"
+        android:layout_width="40dp"
+        android:layout_weight="1"
+        android:layout_height="40dp"/>
+
+      <ImageView
+        android:src="@mipmap/imwx"
+        android:id="@+id/image_imwx"
+        android:layout_width="40dp"
+        android:layout_weight="1"
+        android:layout_height="40dp"/>
+
+      <ImageView
+        android:src="@mipmap/imwb"
+        android:layout_weight="1"
+        android:id="@+id/image_imwb"
+        android:layout_width="40dp"
+        android:layout_height="40dp"/>
+
+    </LinearLayout>
+  </LinearLayout>
+</RelativeLayout>
